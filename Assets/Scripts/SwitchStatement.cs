@@ -34,7 +34,7 @@ public class SwitchStatement : MonoBehaviour
         getPlayersAnswer();
     }
 
-    private void cheatCodes()
+    private void cheatCodes() //Υπάρχουν Cheat Codes που αναλογα το κουμπι κάνουν και τις κατάλληλες λειτουργιες. Παράδειγμα το L παει κατευθειαν τον παικτη στην επομενη πιστα, το C κανει το object να χανει τα colliders του που εχει και να το κανει να περναει μεσα απο objects και τελος το p κανει το object να μπορει να κανει collide χωρις ομως να το επηρεαζει στο να σκοτώνει. 
     {
         if (Input.GetKey(KeyCode.L))
         {
@@ -61,21 +61,17 @@ public class SwitchStatement : MonoBehaviour
         {
             collideWithoutCrash = !collideWithoutCrash;
         }
-        else if (Input.GetKey(KeyCode.M))
-        {
-            Time.timeScale = 0f;
-        }
     }
 
 
-    private void Start()
+    private void Start()// κατα την εναρξη απενεργοποιειται το inputfield και λαμβανονται τα AudioComponents.
     {
         audioSource = GetComponent<AudioSource>();
         inputField.interactable = false;
         inputField.gameObject.SetActive(false);
     }
 
-    public void OnCollisionEnter(Collision collision)
+    public void OnCollisionEnter(Collision collision)// Εδω είναι ο πυρηνας των μηχανισμων που αναλογα με το collide που κανει ο παικτης γινονται και οι καταλληλες εκτελεσεις των μεθοδων.
     {
         if (isTransitioning || collideWithoutCrash) { return; }
 
@@ -97,28 +93,28 @@ public class SwitchStatement : MonoBehaviour
         }
     }
 
-    public void StopMusicAndMovement()
+    public void StopMusicAndMovement()//Σταματαει την μουσικη (crash/push κτλ) και απενεργοποιειται η κινηση.
     {
         AudioSource audio = gameObject.GetComponent<AudioSource>();
         audio.Stop();
         Movement movementComponent = GetComponent<Movement>();
         movementComponent.enabled = false;
     }
-    public void Death()
+    public void Death()// Με την εκτελεση του ο παικτης επαναφερεται στην αρχη της πιστας.
     {
 
-        int currentStage = SceneManager.GetActiveScene().buildIndex;
+        int currentStage = SceneManager.GetActiveScene().buildIndex;// λαμβανεται ο αριθμος του δεδομενου επιπεδου που ειναι ο παικτης
         SceneManager.LoadScene(currentStage);
     }
 
-    public void NextStage()
+    public void NextStage()// Κατα την εκτελεση του ο παικτης παει στην επομενη πιστα ή στην αρχικη οθονη αναλογα εαν βρισκεται απο το 0 εως το 9 ή στο 10.
     {
 
 
-        int currentStage = SceneManager.GetActiveScene().buildIndex;
+        int currentStage = SceneManager.GetActiveScene().buildIndex;// λαμβανεται ο αριθμος του δεδομενου επιπεδου που ειναι ο παικτης
         int nextStage = currentStage + 1;
 
-        if (nextStage == SceneManager.sceneCountInBuildSettings)
+        if (nextStage == SceneManager.sceneCountInBuildSettings)// Λαμβάνεται ο αριθμος όλων των Scenes και ελεγχεται εαν το Stage που βρισκεται ο παικτης είναι το τελευταιο εαν ειναι τοτε το μεταφερει στην αρχη.
         {
             nextStage = 0;
         }
@@ -128,16 +124,16 @@ public class SwitchStatement : MonoBehaviour
 
     }
 
-    public void PauseTheGameAndAsk()
+    public void PauseTheGameAndAsk()// Κατα την εκτελεση αυτης της μεθοδου εμφανιζεται ενα μηνυμα στον παικτη με την πραξη που καλειται να εκτελεσει.
     {
         isTransitioning = true;
         int currentStage = SceneManager.GetActiveScene().buildIndex;
 
 
         Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
-        int firstRandomNumber = currentStage;
-        int secondRandomNumber = UnityEngine.Random.Range(1, 10);
-        if (currentStage != SceneManager.sceneCountInBuildSettings && !nextStage)
+        int firstRandomNumber = currentStage; //Για την ληψη του πρωτου αριθμου (θεματικου αριθμου γίνεται φόρτωση της αριθμησης του επιπεδου, πχ το Scene1 έχει index 1 κτλ οπου στο Scene2(stage2) θα γινει πολλαπλασιασμος 2χ1 ή 2χ2 ή 2χ5 ή 2χ7 .... 2χ10.
+        int secondRandomNumber = UnityEngine.Random.Range(1, 10); // παραγεται ενας τυχαιος αριθμος απο το 1 εως το 10
+        if (currentStage != SceneManager.sceneCountInBuildSettings && !nextStage)//ετοιμαζεται το κειμενο και γινονται οι καταλληλες εκχωρησεις σε λογικες μεταβλητες για να αναλαβουν αλλοι μεθοδοι τις υπολοιπες λειτουργιες. Για παραδειγμα το nextStage οταν λαβει τιμη true δεν μπορει να ξανα εκτελεστει αυτη εδω η μεθοδος ενω με την μεταβλητη readyForAnswer δινεται η δυνατοτητα στο ελεγχο που εκτελει η μεθοδος getPlayersAnswer() να εφαρμοσει τις λειτουργιες της.
         {
             rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             Debug.Log(firstRandomNumber + " * " + secondRandomNumber);
@@ -154,11 +150,11 @@ public class SwitchStatement : MonoBehaviour
         successParticle.Play();
 
     }
-    public void getPlayersAnswer()
+    public void getPlayersAnswer()// Με την εκτελεση της ελεγχεται η εισαγωγη του παικτη και εαν ειναι integer τοτε γινεται επιπλεον ελεγχος εαν ειναι ο αριθμος που ψαχνουμε εαν οχι του εμφανιζεται ενα μηνυμα λαθους με την σωστη απαντηση και προχωραει στην επομενη πιστα. Στην περιπτωση που δεν δωσει integer αριθμο του εμφανιζεται αντιστοιχο μηνυμα σφαλματος που τον προτρεπει να κανει εισαγωγη integer αριθμου.
     {
         if (!answerHasBeenReceived && readyForAnswer)
         {
-            if (Input.GetKeyDown(KeyCode.Return))//να βαλω τον ελεγχο στο update οχι εδω.
+            if (Input.GetKeyDown(KeyCode.Return))
             {
                 string playersInput = inputField.text;
                 if (int.TryParse(playersInput, out playersAnswer))
